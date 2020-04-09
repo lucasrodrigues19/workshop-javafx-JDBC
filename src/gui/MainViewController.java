@@ -3,6 +3,7 @@ package gui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 import application.Main;
 import ex.MyException;
@@ -47,8 +48,10 @@ public class MainViewController implements Initializable {
 	public void onMenuItemDepartamentoAction() {
 		System.out.println(menuItemDepartamento.getText());
 		try {
-			loadView("/gui/DepartamentList.fxml");
-			loadDepartamentTabelView("/gui/DepartamentList.fxml");
+			loadView("/gui/DepartamentList.fxml", (DepartamentListController controller)->{
+				controller.setService(new DepartamentoService());
+				controller.atualizarTableView();
+			});
 		} catch (MyException e) {
 			e.printStackTrace();
 			System.out.println(e.getMessage());
@@ -58,7 +61,8 @@ public class MainViewController implements Initializable {
 	@FXML
 	public void onMenuItemSobreAction() throws MyException {
 		try {
-			loadView("/gui/About.fxml");
+
+			loadView("/gui/About.fxml", null);
 		} catch (MyException e) {
 			e.printStackTrace();
 			System.out.println(e.getMessage());
@@ -66,14 +70,16 @@ public class MainViewController implements Initializable {
 	}
 
 	/**
-	 * Carrega uma View e preserva os filhos da MainView
+	 * Carrega uma View e preserva os filhos da MainView Executa uma função do tipo
+	 * consumer passada como parametro
 	 * 
-	 * @param nomeAbsoluto Caminho da View para ser carregada
+	 * @param <T>
+	 * @param nomeAbsoluto caminho da view a ser carregada
+	 * @param executar     implementacao da interface consummer
 	 * @throws MyException
 	 */
-	private synchronized void loadView(String nomeAbsoluto) throws MyException { // synchronized garante que o
-																					// processamento não seja
-																					// interrupido durante mult-treading
+	private synchronized <T> void loadView(String nomeAbsoluto, Consumer<T> executar) throws MyException {
+		// synchronize garante processamento não seja interrupido durante mult-treading
 
 		if (nomeAbsoluto == null || "".equals(nomeAbsoluto))
 			throw new MyException("Parametro nulo");
@@ -97,54 +103,15 @@ public class MainViewController implements Initializable {
 			mainVBox.getChildren().add(mainMenu);
 			mainVBox.getChildren().addAll(newVBox.getChildren()); // adc todos os filhos do newVBOX
 
+			// executa a funçao passada como parametro(Interface funcional consumer)
+			if (executar != null) {
+				T controller = loader.getController(); // recebe um controle do tipo T passado como parametro]
+				executar.accept(controller); // passa como parametro para executrar a funçao o objeto controler do tipo
+												// T (Passado como parametro)
+			} 											
 		} catch (IOException e) {
 			e.printStackTrace();
 			Alerts.showAlert("Error", "Erro ao carregar a View", e.getMessage(), AlertType.ERROR);
-			throw new MyException(e.getMessage());
-		}
-
-	}
-
-	/**
-	 * Carrega a TableView da DepartamentList.fxml
-	 * 
-	 * @param nomeAbsoluto Caminho da View para ser carregada
-	 * @throws MyException
-	 */
-	private synchronized void loadDepartamentTabelView(String nomeAbsoluto) throws MyException { // synchronized garante
-																									// que o
-		// processamento não seja
-		// interrupido durante mult-treading
-
-		if (nomeAbsoluto == null || "".equals(nomeAbsoluto))
-			throw new MyException("Parametro nulo");
-
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource(nomeAbsoluto));
-			VBox newVBox = loader.load();
-			Scene mainScane = Main.getMainScene();
-
-			// pega o primeiro elemento do mainScene(no caso o ScrollPane)
-			VBox mainVBox = (VBox) ((ScrollPane) mainScane.getRoot()).getContent(); // referencía o que esta dentro do
-																					// content;
-
-			// referencia para o menu
-			Node mainMenu = mainVBox.getChildren().get(0); // pega o primeiro filho da janela principal
-
-			// limpa os filhos do vBox
-			mainVBox.getChildren().clear();
-
-			// adc os nodes
-			mainVBox.getChildren().add(mainMenu);
-			mainVBox.getChildren().addAll(newVBox.getChildren()); // adc todos os filhos do newVBOX
-
-			DepartamentListController controller = loader.getController();
-			controller.setService(new DepartamentoService());
-			controller.atualizarTableView();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-			Alerts.showAlert("Error", "Erro ao carregar a TableView", e.getMessage(), AlertType.ERROR);
 			throw new MyException(e.getMessage());
 		}
 

@@ -63,8 +63,8 @@ public class DepartamentListController implements Initializable {
 	 */
 	private void inicalizarElementos() {
 		// padrao do javafx, para iniciar o comportamento da colunas
-		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("Id"));
-		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("Nome"));
+		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
+		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("nome"));
 
 		// table view acompanha a altura e largura da janelaMain
 		Stage stage = (Stage) Main.getMainScene().getWindow(); // referencia para a janela
