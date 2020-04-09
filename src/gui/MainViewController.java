@@ -17,6 +17,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import modelo.service.DepartamentoService;
 
 /**
  * Classe usada para da suporte aos eventos e modificações na GUI gerada a
@@ -39,8 +40,7 @@ public class MainViewController implements Initializable {
 	@FXML
 	public void onMenuItemVendedorAction() {
 		System.out.println(menuItemVendedor.getText());
-	
-		
+
 	}
 
 	@FXML
@@ -48,6 +48,7 @@ public class MainViewController implements Initializable {
 		System.out.println(menuItemDepartamento.getText());
 		try {
 			loadView("/gui/DepartamentList.fxml");
+			loadDepartamentTabelView("/gui/DepartamentList.fxml");
 		} catch (MyException e) {
 			e.printStackTrace();
 			System.out.println(e.getMessage());
@@ -103,30 +104,78 @@ public class MainViewController implements Initializable {
 		}
 
 	}
+
 	/**
-	 * Carrega a MainView
+	 * Carrega a TableView da DepartamentList.fxml
+	 * 
+	 * @param nomeAbsoluto Caminho da View para ser carregada
 	 * @throws MyException
 	 */
-	private void loadMainView()throws MyException {
-		if(Main.getMainScene() == null)
-				throw new MyException("Scene invalida! ");
-		
-			//peguei a sena
-			Scene mainScene = Main.getMainScene();
-			
-			//pegar o primeiro elemento
-			VBox mainVBox =(VBox) ((ScrollPane) mainScene.getRoot()).getContent();
-			
-			//pega o primeiro controle
-			Node menuMain = mainVBox.getChildren().get(0);
-			
-			//apaga os filhos
+	private synchronized void loadDepartamentTabelView(String nomeAbsoluto) throws MyException { // synchronized garante
+																									// que o
+		// processamento não seja
+		// interrupido durante mult-treading
+
+		if (nomeAbsoluto == null || "".equals(nomeAbsoluto))
+			throw new MyException("Parametro nulo");
+
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(nomeAbsoluto));
+			VBox newVBox = loader.load();
+			Scene mainScane = Main.getMainScene();
+
+			// pega o primeiro elemento do mainScene(no caso o ScrollPane)
+			VBox mainVBox = (VBox) ((ScrollPane) mainScane.getRoot()).getContent(); // referencía o que esta dentro do
+																					// content;
+
+			// referencia para o menu
+			Node mainMenu = mainVBox.getChildren().get(0); // pega o primeiro filho da janela principal
+
+			// limpa os filhos do vBox
 			mainVBox.getChildren().clear();
-			
-			//adiciona o primeiro item
-			mainVBox.getChildren().add(menuMain);
-			
+
+			// adc os nodes
+			mainVBox.getChildren().add(mainMenu);
+			mainVBox.getChildren().addAll(newVBox.getChildren()); // adc todos os filhos do newVBOX
+
+			DepartamentListController controller = loader.getController();
+			controller.setService(new DepartamentoService());
+			controller.atualizarTableView();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			Alerts.showAlert("Error", "Erro ao carregar a TableView", e.getMessage(), AlertType.ERROR);
+			throw new MyException(e.getMessage());
+		}
+
 	}
+
+	/**
+	 * Carrega a MainView
+	 * 
+	 * @throws MyException
+	 */
+	private void loadMainView() throws MyException {
+		if (Main.getMainScene() == null)
+			throw new MyException("Scene invalida! ");
+
+		// peguei a sena
+		Scene mainScene = Main.getMainScene();
+
+		// pegar o primeiro elemento
+		VBox mainVBox = (VBox) ((ScrollPane) mainScene.getRoot()).getContent();
+
+		// pega o primeiro controle
+		Node menuMain = mainVBox.getChildren().get(0);
+
+		// apaga os filhos
+		mainVBox.getChildren().clear();
+
+		// adiciona o primeiro item
+		mainVBox.getChildren().add(menuMain);
+
+	}
+
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 
