@@ -14,6 +14,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 
@@ -38,11 +39,19 @@ public class MainViewController implements Initializable {
 	@FXML
 	public void onMenuItemVendedorAction() {
 		System.out.println(menuItemVendedor.getText());
+	
+		
 	}
 
 	@FXML
 	public void onMenuItemDepartamentoAction() {
 		System.out.println(menuItemDepartamento.getText());
+		try {
+			loadView("/gui/DepartamentList.fxml");
+		} catch (MyException e) {
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
 	}
 
 	@FXML
@@ -94,7 +103,30 @@ public class MainViewController implements Initializable {
 		}
 
 	}
-
+	/**
+	 * Carrega a MainView
+	 * @throws MyException
+	 */
+	private void loadMainView()throws MyException {
+		if(Main.getMainScene() == null)
+				throw new MyException("Scene invalida! ");
+		
+			//peguei a sena
+			Scene mainScene = Main.getMainScene();
+			
+			//pegar o primeiro elemento
+			VBox mainVBox =(VBox) ((ScrollPane) mainScene.getRoot()).getContent();
+			
+			//pega o primeiro controle
+			Node menuMain = mainVBox.getChildren().get(0);
+			
+			//apaga os filhos
+			mainVBox.getChildren().clear();
+			
+			//adiciona o primeiro item
+			mainVBox.getChildren().add(menuMain);
+			
+	}
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 
