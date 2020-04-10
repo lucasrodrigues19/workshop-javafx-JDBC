@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 import application.Main;
+import db.DB;
 import ex.MyException;
 import gui.utils.Alerts;
 import javafx.fxml.FXML;
@@ -13,11 +14,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import modelo.dao.DaoFactory;
 import modelo.service.DepartamentoService;
 
 /**
@@ -49,11 +52,12 @@ public class MainViewController implements Initializable {
 		System.out.println(menuItemDepartamento.getText());
 		try {
 			loadView("/gui/DepartamentList.fxml", (DepartamentListController controller)->{
-				controller.setService(new DepartamentoService());
+				controller.setService(new DepartamentoService(DaoFactory.getDepartamentoDAO(DB.getConexao("db.properties"))));
 				controller.atualizarTableView();
 			});
 		} catch (MyException e) {
 			e.printStackTrace();
+			Alerts.showAlert("Error", "Erro ao listar dados da tabela", e.getMessage(), AlertType.ERROR);
 			System.out.println(e.getMessage());
 		}
 	}
@@ -145,7 +149,6 @@ public class MainViewController implements Initializable {
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-
 	}
 
 }

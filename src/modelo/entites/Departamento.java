@@ -3,6 +3,10 @@ package modelo.entites;
 import java.io.Serializable;
 
 public class Departamento implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2552078964629773325L;
 	private Integer id;
 	private String nome;
 

@@ -81,6 +81,7 @@ public class DepartamentListController implements Initializable {
 			throw new IllegalStateException("O service esta nulo");
 		}
 		List<Departamento> result = getService().pesquisarTodos();
+		
 		if (result == null || result.size() <= 0) {
 			Alerts.showAlert("Error ", "Erro ao atualizar a tabela", "Erro ao carregar os departamentos",
 					AlertType.ERROR);
