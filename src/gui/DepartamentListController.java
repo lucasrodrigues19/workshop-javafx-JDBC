@@ -4,19 +4,23 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javax.swing.text.TabExpander;
-
 import application.Main;
 import gui.utils.Alerts;
+import gui.utils.WorkUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modelo.entites.Departamento;
 import modelo.service.DepartamentoService;
@@ -49,8 +53,10 @@ public class DepartamentListController implements Initializable {
 	}
 
 	@FXML
-	public void onBtNewAction() {
+	public void onBtNewAction(ActionEvent event) {
+		Stage stage = WorkUtils.palcoAtual(event);
 		System.out.println("Botao neew...");
+		criarDialogForm(stage, "/gui/DepartamentForm.fxml");
 	}
 
 	@Override
@@ -81,7 +87,7 @@ public class DepartamentListController implements Initializable {
 			throw new IllegalStateException("O service esta nulo");
 		}
 		List<Departamento> result = getService().pesquisarTodos();
-		
+
 		if (result == null || result.size() <= 0) {
 			Alerts.showAlert("Error ", "Erro ao atualizar a tabela", "Erro ao carregar os departamentos",
 					AlertType.ERROR);
@@ -90,5 +96,29 @@ public class DepartamentListController implements Initializable {
 
 		obsListDpt = FXCollections.observableArrayList(result);
 		tableViewDepartamento.setItems(obsListDpt);
+	}
+
+	/**
+	 * Metodo responsavel por criar uma janela de dialogo
+	 * 
+	 * @param parentStage  stage pai
+	 * @param absoluteName caminho para o dialag
+	 */
+	public void criarDialogForm(Stage parentStage, String absoluteName) {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
+			Pane pane = (Pane) loader.load();
+
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Entre com os dados do departamento");
+			dialogStage.setScene(new Scene(pane));
+			dialogStage.setResizable(false);// a janela não pode ser redimensionada
+			dialogStage.initOwner(parentStage);// stage pai do dialogStage
+			dialogStage.initModality(Modality.WINDOW_MODAL); // vai dizer o comportamento da janela
+			dialogStage.showAndWait();// vai abrir em cima do stage pai, e vai ter um comportmento modal
+
+		} catch (Exception e) {
+			Alerts.showAlert("Error", "Erro ao abrir a view", e.getMessage(), AlertType.ERROR);
+		}
 	}
 }
