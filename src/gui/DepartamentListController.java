@@ -12,16 +12,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.Pane;
-import javafx.stage.Modality;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import modelo.entites.Departamento;
 import modelo.service.DepartamentoService;
@@ -62,6 +60,24 @@ public class DepartamentListController implements Initializable {
 		helper.criarDialogForm(stage, "/gui/DepartamentForm.fxml","Entre com os dados do departamento", null);
 	}
 
+	@FXML
+	public void tableColumnIdAction() {
+		tableViewDepartamento.setOnMouseClicked((MouseEvent event) ->{
+			if(event.getButton().equals(MouseButton.PRIMARY)) {
+				if(event.getClickCount() == 2) {
+					String nome = tableViewDepartamento.getSelectionModel().getSelectedItem().getNome();
+					int id = tableViewDepartamento.getSelectionModel().getSelectedItem().getId();
+					Stage stage = WorkUtils.palcoAtual(event);
+					helper.criarDialogForm(stage, "/gui/DepartamentForm.fxml", "Atualizar dados", (DepartamentFormController controller)->{
+						controller.setDpt(new Departamento(id, nome));
+						controller.atualizarDadosForm();
+					});
+					
+				}
+			}
+		});
+		
+	}
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {

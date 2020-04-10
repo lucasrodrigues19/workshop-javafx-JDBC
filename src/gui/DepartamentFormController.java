@@ -3,20 +3,26 @@ package gui;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import ex.MyException;
+import gui.helper.WorkShopHelper;
 import gui.utils.Alerts;
 import gui.utils.Constraints;
+import gui.utils.WorkUtils;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import modelo.entites.Departamento;
-import javafx.scene.control.Alert.AlertType;
 
 public class DepartamentFormController implements Initializable {
 
 	private Departamento dpt;
+	
+	private WorkShopHelper helper = new WorkShopHelper();
+	
 
 	@FXML
 	private TextField txtNome;
@@ -39,12 +45,14 @@ public class DepartamentFormController implements Initializable {
 
 	@FXML
 	public void onBtSalvarAction() {
-		Alerts.showAlert("Confirmação", "Salvamento de dados", "dados salvos com sucesso", AlertType.CONFIRMATION);
+		Alerts.showAlert("Confirmação", "Salvamento de dados", "dados salvos com sucesso", AlertType.INFORMATION);
 	}
 
 	@FXML
-	public void onBtCancelarAction() {
-		Alerts.showAlert("Confirmação", "Cancelamento de dados", "ação cancelada", AlertType.CONFIRMATION);
+	public void onBtCancelarAction(ActionEvent event) {
+//		Alerts.showAlert("Confirmação", "Cancelamento de dados", "ação cancelada", AlertType.CONFIRMATION);
+		Stage parentStage = WorkUtils.palcoAtual(event);
+		helper.FecharView(parentStage);
 	}
 
 	@Override

@@ -160,7 +160,7 @@ public class WorkShopHelper {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			Pane pane = (Pane) loader.load();
-
+			
 			if (executar != null) {
 				T controller = loader.getController();
 				executar.accept(controller);
@@ -178,4 +178,14 @@ public class WorkShopHelper {
 			Alerts.showAlert("Error", "Erro ao abrir a view", e.getMessage(), AlertType.ERROR);
 		}
 	}
+	 
+		public void FecharView(Stage parentStage) {
+			try {
+				
+				parentStage.close();
+
+			} catch (Exception e) {
+				Alerts.showAlert("Error", "Erro ao fechar a view", e.getMessage(), AlertType.ERROR);
+			}
+		}
 }
