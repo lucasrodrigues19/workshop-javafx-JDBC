@@ -51,8 +51,9 @@ public class MainViewController implements Initializable {
 	public void onMenuItemDepartamentoAction() {
 		System.out.println(menuItemDepartamento.getText());
 		try {
-			loadView("/gui/DepartamentList.fxml", (DepartamentListController controller)->{
-				controller.setService(new DepartamentoService(DaoFactory.getDepartamentoDAO(DB.getConexao("db.properties"))));
+			loadView("/gui/DepartamentList.fxml", (DepartamentListController controller) -> {
+				controller.setService(
+						new DepartamentoService(DaoFactory.getDepartamentoDAO(DB.getConexao("db.properties"))));
 				controller.atualizarTableView();
 			});
 		} catch (MyException e) {
@@ -112,7 +113,7 @@ public class MainViewController implements Initializable {
 				T controller = loader.getController(); // recebe um controle do tipo T passado como parametro]
 				executar.accept(controller); // passa como parametro para executrar a funçao o objeto controler do tipo
 												// T (Passado como parametro)
-			} 											
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 			Alerts.showAlert("Error", "Erro ao carregar a View", e.getMessage(), AlertType.ERROR);

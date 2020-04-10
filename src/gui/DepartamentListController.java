@@ -56,8 +56,9 @@ public class DepartamentListController implements Initializable {
 	public void onBtNewAction(ActionEvent event) {
 		Stage stage = WorkUtils.palcoAtual(event);
 		System.out.println("Botao neew...");
-		criarDialogForm(stage, "/gui/DepartamentForm.fxml");
+		criarDialogForm(new Departamento(),stage, "/gui/DepartamentForm.fxml");
 	}
+
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -100,14 +101,20 @@ public class DepartamentListController implements Initializable {
 
 	/**
 	 * Metodo responsavel por criar uma janela de dialogo
+	 * @param departamento 
 	 * 
 	 * @param parentStage  stage pai
 	 * @param absoluteName caminho para o dialag
 	 */
-	public void criarDialogForm(Stage parentStage, String absoluteName) {
+	public void criarDialogForm(Departamento departamento, Stage parentStage, String absoluteName) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			Pane pane = (Pane) loader.load();
+			
+			DepartamentFormController controller = loader.getController();
+			controller.setDpt(departamento);
+			controller.atualizarDadosForm();
+
 			//configurar o stage
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Entre com os dados do departamento");
