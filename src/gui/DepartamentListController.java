@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import application.Main;
+import gui.helper.WorkShopHelper;
 import gui.utils.Alerts;
 import gui.utils.WorkUtils;
 import javafx.collections.FXCollections;
@@ -27,6 +28,8 @@ import modelo.service.DepartamentoService;
 
 public class DepartamentListController implements Initializable {
 
+	private WorkShopHelper helper = new WorkShopHelper();
+	
 	private DepartamentoService service;
 
 	@FXML
@@ -56,7 +59,7 @@ public class DepartamentListController implements Initializable {
 	public void onBtNewAction(ActionEvent event) {
 		Stage stage = WorkUtils.palcoAtual(event);
 		System.out.println("Botao neew...");
-		criarDialogForm(new Departamento(),stage, "/gui/DepartamentForm.fxml");
+		helper.criarDialogForm(stage, "/gui/DepartamentForm.fxml","Entre com os dados do departamento", null);
 	}
 
 
@@ -99,33 +102,5 @@ public class DepartamentListController implements Initializable {
 		tableViewDepartamento.setItems(obsListDpt);
 	}
 
-	/**
-	 * Metodo responsavel por criar uma janela de dialogo
-	 * @param departamento 
-	 * 
-	 * @param parentStage  stage pai
-	 * @param absoluteName caminho para o dialag
-	 */
-	public void criarDialogForm(Departamento departamento, Stage parentStage, String absoluteName) {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
-			Pane pane = (Pane) loader.load();
-			
-			DepartamentFormController controller = loader.getController();
-			controller.setDpt(departamento);
-			controller.atualizarDadosForm();
-
-			//configurar o stage
-			Stage dialogStage = new Stage();
-			dialogStage.setTitle("Entre com os dados do departamento");
-			dialogStage.setScene(new Scene(pane));
-			dialogStage.setResizable(false);// a janela não pode ser redimensionada
-			dialogStage.initOwner(parentStage);// stage pai do dialogStage
-			dialogStage.initModality(Modality.WINDOW_MODAL); // vai dizer o comportamento da janela
-			dialogStage.showAndWait();// vai abrir em cima do stage pai, e vai ter um comportmento modal
-
-		} catch (Exception e) {
-			Alerts.showAlert("Error", "Erro ao abrir a view", e.getMessage(), AlertType.ERROR);
-		}
-	}
+	
 }
