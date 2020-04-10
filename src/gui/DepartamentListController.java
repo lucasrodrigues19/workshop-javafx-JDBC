@@ -108,7 +108,7 @@ public class DepartamentListController implements Initializable {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			Pane pane = (Pane) loader.load();
-
+			//configurar o stage
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Entre com os dados do departamento");
 			dialogStage.setScene(new Scene(pane));
