@@ -1,9 +1,12 @@
 package gui;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import gui.helper.WorkShopHelper;
+import gui.listeners.DadoAlteradoListener;
 import gui.utils.Alerts;
 import gui.utils.Constraints;
 import gui.utils.WorkUtils;
@@ -26,6 +29,8 @@ public class DepartamentFormController implements Initializable {
 
 	private DepartamentoService service;
 
+	private List<DadoAlteradoListener> dadosAlteradosListeners = new ArrayList<DadoAlteradoListener>();
+	
 	@FXML
 	private TextField txtNome;
 
@@ -53,6 +58,13 @@ public class DepartamentFormController implements Initializable {
 		this.service = service;
 	}
 
+	/**
+	 * Adiciona um listener(Esperando um sinal) para receber o evento de minha classe
+	 * @param listener
+	 */
+	public void inscreverDadoAlteradoListener(DadoAlteradoListener listener) {
+		dadosAlteradosListeners.add(listener);
+	}
 	@FXML
 	public void onBtSalvarAction(ActionEvent event) {
 		Departamento dpt = getDadosForm();
@@ -62,9 +74,21 @@ public class DepartamentFormController implements Initializable {
 			throw new IllegalArgumentException("O departamento está null");
 			
 		service.salvarOuAtualizar(dpt);
+		//emite o sinal(evento) para que meu listener seja executado
+		notificarDadosAlteradosListeners();
 		Stage parentStage = WorkUtils.palcoAtual(event);
 		helper.FecharView(parentStage);
-		Alerts.showAlert("Confirmação", "Salvamento de dados", "dados salvos com sucesso", AlertType.INFORMATION);
+		//Alerts.showAlert("Confirmação", "Salvamento de dados", "dados salvos com sucesso", AlertType.INFORMATION);
+	}
+
+	/**
+	 * executa a o evento onDadosAlterados para cada listener(sera executado quando houver uma modificação ou alteração no controle)
+	 */
+	private void notificarDadosAlteradosListeners() {
+		for(DadoAlteradoListener listener : dadosAlteradosListeners) {
+			listener.onDadosAlterados();
+		}
+		
 	}
 
 	private Departamento getDadosForm() {

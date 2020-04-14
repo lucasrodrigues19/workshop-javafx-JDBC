@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import application.Main;
 import db.DB;
 import gui.helper.WorkShopHelper;
+import gui.listeners.DadoAlteradoListener;
 import gui.utils.Alerts;
 import gui.utils.WorkUtils;
 import javafx.collections.FXCollections;
@@ -26,7 +27,7 @@ import modelo.dao.DaoFactory;
 import modelo.entites.Departamento;
 import modelo.service.DepartamentoService;
 
-public class DepartamentListController implements Initializable {
+public class DepartamentListController implements Initializable,DadoAlteradoListener {
 
 	private WorkShopHelper helper = new WorkShopHelper();
 	
@@ -61,6 +62,7 @@ public class DepartamentListController implements Initializable {
 		System.out.println("Botao neew...");
 		helper.criarDialogForm(stage, "/gui/DepartamentForm.fxml","Entre com os dados do departamento", (DepartamentFormController controller)->{
 			controller.setService(getService());
+			controller.inscreverDadoAlteradoListener(this);//me escrevendo(this)para receber o evento
 			
 		});
 	}
@@ -76,6 +78,7 @@ public class DepartamentListController implements Initializable {
 					helper.criarDialogForm(stage, "/gui/DepartamentForm.fxml", "Atualizar dados", (DepartamentFormController controller)->{
 						controller.setDpt(new Departamento(id, nome));
 						controller.setService(getService());
+						controller.inscreverDadoAlteradoListener(this);//me escrevendo(this)para receber o evento(onDadosAlterados)
 						controller.atualizarDadosForm();
 					});
 					
@@ -122,6 +125,12 @@ public class DepartamentListController implements Initializable {
 
 		obsListDpt = FXCollections.observableArrayList(result);
 		tableViewDepartamento.setItems(obsListDpt);
+	}
+
+	@Override
+	public void onDadosAlterados() {
+		atualizarTableView();
+		
 	}
 
 	
