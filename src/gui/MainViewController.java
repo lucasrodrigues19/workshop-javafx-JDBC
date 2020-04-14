@@ -46,8 +46,7 @@ public class MainViewController implements Initializable {
 		System.out.println(menuItemDepartamento.getText());
 		try {
 			helper.loadView("/gui/DepartamentList.fxml",Main.getMainScene(), (DepartamentListController controller) -> {
-				controller.setService(
-						new DepartamentoService(DaoFactory.getDepartamentoDAO(DB.getConexao("db.properties"))));
+				controller.setService(new DepartamentoService(DaoFactory.getDepartamentoDAO(DB.getConexao("db.properties"))));
 				controller.atualizarTableView();
 			});
 		} catch (MyException e) {

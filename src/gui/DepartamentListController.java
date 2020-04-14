@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import application.Main;
+import db.DB;
 import gui.helper.WorkShopHelper;
 import gui.utils.Alerts;
 import gui.utils.WorkUtils;
@@ -21,6 +22,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import modelo.dao.DaoFactory;
 import modelo.entites.Departamento;
 import modelo.service.DepartamentoService;
 
@@ -57,7 +59,10 @@ public class DepartamentListController implements Initializable {
 	public void onBtNewAction(ActionEvent event) {
 		Stage stage = WorkUtils.palcoAtual(event);
 		System.out.println("Botao neew...");
-		helper.criarDialogForm(stage, "/gui/DepartamentForm.fxml","Entre com os dados do departamento", null);
+		helper.criarDialogForm(stage, "/gui/DepartamentForm.fxml","Entre com os dados do departamento", (DepartamentFormController controller)->{
+			controller.setService(getService());
+			
+		});
 	}
 
 	@FXML
@@ -70,6 +75,7 @@ public class DepartamentListController implements Initializable {
 					Stage stage = WorkUtils.palcoAtual(event);
 					helper.criarDialogForm(stage, "/gui/DepartamentForm.fxml", "Atualizar dados", (DepartamentFormController controller)->{
 						controller.setDpt(new Departamento(id, nome));
+						controller.setService(getService());
 						controller.atualizarDadosForm();
 					});
 					

@@ -59,12 +59,12 @@ public class DB {
 	 * 
 	 * @param statment
 	 */
-	public static void fecharStatement(Statement statment) {
+	public static void fecharStatement(Statement st) {
 		try {
-			if (statment == null)
+			if (st == null)
 				throw new DBException("Erro ao fechar statment: você nao possui uma statment para ser fechada");
 
-			con.close();
+			st.close();
 			System.out.println("Statement fechada");
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -77,12 +77,12 @@ public class DB {
 	 * 
 	 * @param resultSet
 	 */
-	public static void fecharResultSet(ResultSet resultSet) {
+	public static void fecharResultSet(ResultSet rs) {
 		try {
-			if (resultSet == null)
+			if (rs == null)
 				throw new DBException("Erro ao fechar resultSet: você nao possui um resultSet para ser fechada");
 
-			con.close();
+			rs.close();
 			System.out.println("resultSet fechada");
 		} catch (SQLException e) {
 			e.printStackTrace();
