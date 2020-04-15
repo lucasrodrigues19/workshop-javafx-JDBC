@@ -19,7 +19,7 @@
       </Label>
       <ToolBar prefHeight="40.0" prefWidth="200.0">
         <items>
-          <Button fx:id="btNew" mnemonicParsing="false" onAction="#onBtNewAction" text="New" />
+          <Button fx:id="btNew" mnemonicParsing="false" onAction="#onBtNewAction" style="-fx-background-color: #fff; -fx-border-color: blue; -fx-border-radius: 5px;" text="New" textFill="#2b09eb" />
         </items>
       </ToolBar>
       <TableView fx:id="tableViewDepartamento" onMouseClicked="#tableColumnIdAction" prefHeight="200.0" prefWidth="200.0">

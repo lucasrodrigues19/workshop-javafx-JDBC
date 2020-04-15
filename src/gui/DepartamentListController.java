@@ -61,6 +61,7 @@ public class DepartamentListController implements Initializable,DadoAlteradoList
 		Stage stage = WorkUtils.palcoAtual(event);
 		System.out.println("Botao neew...");
 		helper.criarDialogForm(stage, "/gui/DepartamentForm.fxml","Entre com os dados do departamento", (DepartamentFormController controller)->{
+			controller.setDpt(new Departamento());
 			controller.setService(getService());
 			controller.inscreverDadoAlteradoListener(this);//me escrevendo(this)para receber o evento
 			
@@ -78,8 +79,8 @@ public class DepartamentListController implements Initializable,DadoAlteradoList
 					helper.criarDialogForm(stage, "/gui/DepartamentForm.fxml", "Atualizar dados", (DepartamentFormController controller)->{
 						controller.setDpt(new Departamento(id, nome));
 						controller.setService(getService());
-						controller.inscreverDadoAlteradoListener(this);//me escrevendo(this)para receber o evento(onDadosAlterados)
 						controller.atualizarDadosForm();
+						controller.inscreverDadoAlteradoListener(this);//me escrevendo(this)para receber o evento(onDadosAlterados)
 					});
 					
 				}

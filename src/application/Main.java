@@ -24,7 +24,7 @@ public class Main extends Application {
 
 			mainScene = new Scene(scrollPane);
 			primaryStage.setScene(mainScene);
-			primaryStage.setTitle("Aplicaçao javaFx");
+			primaryStage.setTitle("Controle de vendas");
 			primaryStage.show();
 		} catch (Exception e) {
 			e.getStackTrace();
