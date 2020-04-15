@@ -38,4 +38,7 @@ public class DepartamentoService {
 		else
 			dptDAO.atualizar(dpt);
 	}
+	public void remover(Departamento dpt) {
+		dptDAO.deletarPorID(dpt.getId());
+	}
 }

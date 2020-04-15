@@ -19,7 +19,13 @@
       </Label>
       <ToolBar prefHeight="40.0" prefWidth="200.0">
         <items>
-          <Button fx:id="btNew" mnemonicParsing="false" onAction="#onBtNewAction" style="-fx-background-color: #fff; -fx-border-color: blue; -fx-border-radius: 5px;" text="New" textFill="#2b09eb" />
+          <Button fx:id="btNew" mnemonicParsing="false" onAction="#onBtNewAction" style="-fx-background-color: #fff; -fx-border-color: blue; -fx-border-radius: 5px;" text="Novo" textFill="#2b09eb">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <effect>
+                  <Reflection />
+               </effect></Button>
         </items>
       </ToolBar>
       <TableView fx:id="tableViewDepartamento" onMouseClicked="#onTableDuploClick" prefHeight="200.0" prefWidth="200.0">
@@ -27,6 +33,7 @@
           <TableColumn fx:id="tableColumnId" prefWidth="75.0" text="Id" />
           <TableColumn fx:id="tableColumnName" prefWidth="158.0" text="Nome" />
             <TableColumn fx:id="tableColumnEdit" prefWidth="75.0" />
+            <TableColumn fx:id="tableColumnRemove" prefWidth="96.0" style="-fx-text-align: center;" />
         </columns>
          <cursor>
             <Cursor fx:constant="DEFAULT" />

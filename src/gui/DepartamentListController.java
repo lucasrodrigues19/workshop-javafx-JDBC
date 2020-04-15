@@ -2,9 +2,13 @@ package gui;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
+import com.sun.scenario.effect.Effect;
+
 import application.Main;
+import db.ex.DBException;
 import gui.helper.WorkShopHelper;
 import gui.listeners.DadoAlteradoListener;
 import gui.utils.Alerts;
@@ -15,15 +19,19 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.effect.Reflection;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import modelo.entites.Departamento;
 import modelo.service.DepartamentoService;
@@ -45,6 +53,9 @@ public class DepartamentListController implements Initializable, DadoAlteradoLis
 
 	@FXML
 	private TableColumn<Departamento, Departamento> tableColumnEdit;
+	
+	@FXML
+	private TableColumn<Departamento, Departamento> tableColumnRemove;
 
 	@FXML
 	private Button btNew;
@@ -120,28 +131,33 @@ public class DepartamentListController implements Initializable, DadoAlteradoLis
 	 */
 	public void atualizarTableView() {
 		if (service == null) {
-			Alerts.showAlert("Error ", "Erro ao atualizar a tabela", "O service esta nulo", AlertType.ERROR);
+			Alerts.showAlert("Error ", null, "O service esta nulo", AlertType.ERROR);
 			throw new IllegalStateException("O service esta nulo");
 		}
 		List<Departamento> result = getService().pesquisarTodos();
 
 		if (result == null || result.size() <= 0) {
-			Alerts.showAlert("Error ", "Erro ao atualizar a tabela", "Erro ao carregar os departamentos",
+			Alerts.showAlert("Error ", null, "Erro ao carregar os departamentos",
 					AlertType.ERROR);
 			throw new IllegalStateException("Erro ao carregar os departamentos");
 		}
 
 		obsListDpt = FXCollections.observableArrayList(result);
 		tableViewDepartamento.setItems(obsListDpt);
-		iniciarBotaoEditar();
+		iniciarBotaoEditar(tableColumnEdit,Color.YELLOWGREEN,"yellowgreen","white");
+		iniciarBotaoRemover(tableColumnRemove, Color.RED, "red", "white");
 	}
 
 	/**
 	 * Metodo para criar um botao de edicao para cada linha da minha tabela
+	 * @param tableColumn 
+	 * @param backgroundColor 
+	 * @param borderColor 
+	 * @param textFilColor 
 	 */
-	public void iniciarBotaoEditar() {
-		tableColumnEdit.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-		tableColumnEdit.setCellFactory(param -> new TableCell<Departamento, Departamento>() {
+	public void iniciarBotaoEditar(TableColumn<Departamento, Departamento> tableColumn, Color textFilColor, String borderColor, String backgroundColor) {
+		tableColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+		tableColumn.setCellFactory(param -> new TableCell<Departamento, Departamento>() {
 			private final Button button = new Button("Editar");
 
 			@Override
@@ -150,7 +166,10 @@ public class DepartamentListController implements Initializable, DadoAlteradoLis
 					setGraphic(null);
 					return;
 				}
-				
+				button.setStyle("-fx-background-color: "+ backgroundColor+";-fx-border-color: "+borderColor+"; -fx-border-radius: 5px;");
+				button.setTextFill(textFilColor);
+				button.setCursor(Cursor.HAND);
+				button.setEffect(new Reflection());
 				setGraphic(button);
 				button.setOnAction(event -> helper.criarDialogForm(WorkUtils.palcoAtual(event),
 						"/gui/DepartamentForm.fxml", "Atualizar dados", (DepartamentFormController controller) -> {
@@ -164,6 +183,54 @@ public class DepartamentListController implements Initializable, DadoAlteradoLis
 				
 			}
 		});
+	}
+	/**
+	 * Metodo para criar um botao de remocao para cada linha da minha tabela
+	 * @param tableColumn 
+	 * @param backgroundColor 
+	 * @param borderColor 
+	 * @param textFilColor 
+	 */
+	public void iniciarBotaoRemover(TableColumn<Departamento, Departamento> tableColumn, Color textFilColor, String borderColor, String backgroundColor) {
+		tableColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+		tableColumn.setCellFactory(param -> new TableCell<Departamento, Departamento>() {
+			private final Button button = new Button("Remover");
+
+			@Override
+			protected void updateItem(Departamento obj, boolean empty) {
+				if (obj == null) {
+					setGraphic(null);
+					return;
+				}
+				button.setStyle("-fx-background-color: "+ backgroundColor+";-fx-border-color: "+borderColor+"; -fx-border-radius: 5px;");
+				button.setTextFill(textFilColor);
+				button.setCursor(Cursor.HAND);
+				button.setEffect(new Reflection());
+				setGraphic(button);
+				button.setOnAction(event -> removerDepartamento(obj));
+					
+			}
+		});
+	}
+	
+	private void removerDepartamento(Departamento dpt) {
+		
+		
+		Optional<ButtonType>result = Alerts.mostrarConfirmacao("Confirmação", "Desaeja excluir esse departamento?");
+		if(result.get() == ButtonType.OK) {
+			if(service == null)
+				throw new IllegalStateException("O service esta nulo");
+			
+			try {
+				service.remover(dpt);
+				atualizarTableView();
+			} catch (DBException e) {
+				Alerts.showAlert("Erro ao remover objeto", null, e.getMessage(), AlertType.ERROR);
+			}
+		}
+			
+				
+		
 	}
 
 	@Override
