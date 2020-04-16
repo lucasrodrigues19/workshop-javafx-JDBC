@@ -1,11 +1,10 @@
 package gui;
 
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-
-import com.sun.scenario.effect.Effect;
 
 import application.Main;
 import db.ex.DBException;
@@ -30,7 +29,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import modelo.entites.Vendedor;
@@ -52,10 +50,22 @@ public class VendedorListController implements Initializable, DadoAlteradoListen
 	private TableColumn<Vendedor, String> tableColumnName;
 
 	@FXML
+	private TableColumn<Vendedor, String> tableColumnEmail;
+
+	@FXML
+	private TableColumn<Vendedor, Date> tableColumnDataNasc;
+
+	@FXML
+	private TableColumn<Vendedor, Double> tableColumnSalario;
+
+	@FXML
 	private TableColumn<Vendedor, Vendedor> tableColumnEdit;
-	
+
 	@FXML
 	private TableColumn<Vendedor, Vendedor> tableColumnRemove;
+
+	@FXML
+	private TableColumn<Vendedor, Integer> tableColumnDpt;
 
 	@FXML
 	private Button btNew;
@@ -77,7 +87,7 @@ public class VendedorListController implements Initializable, DadoAlteradoListen
 		System.out.println("Botao neew...");
 		helper.criarDialogForm(stage, "/gui/", "Entre com os dados do departamento",
 				(DepartamentFormController controller) -> {
-	
+
 					inscreverMeuObjeto(controller);// me escrevendo(this)para receber o evento
 
 				});
@@ -93,7 +103,7 @@ public class VendedorListController implements Initializable, DadoAlteradoListen
 					Stage stage = WorkUtils.palcoAtual(event);
 					helper.criarDialogForm(stage, "/gui/", "Atualizar dados",
 							(DepartamentFormController controller) -> {
-								
+
 								controller.atualizarDadosForm();
 								controller.selecionarNome();
 								inscreverMeuObjeto(controller);// me escrevendo(this)para receber o
@@ -118,6 +128,13 @@ public class VendedorListController implements Initializable, DadoAlteradoListen
 		// padrao do javafx, para iniciar o comportamento da colunas
 		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
 		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("nome"));
+		tableColumnEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+		tableColumnDataNasc.setCellValueFactory(new PropertyValueFactory<>("dataNasc"));
+		WorkUtils.formatarDataColunaTabela(tableColumnDataNasc, "dd/MM/yyyy");
+		tableColumnSalario.setCellValueFactory(new PropertyValueFactory<>("baseSalario"));
+		WorkUtils.formatarDoubleColunaTabela(tableColumnSalario, 2);
+
+//		tableColumnDpt.setCellValueFactory(new PropertyValueFactory<>("departamento.id"));
 
 		// table view acompanha a altura e largura da janelaMain
 		Stage stage = (Stage) Main.getMainScene().getWindow(); // referencia para a janela
@@ -136,25 +153,26 @@ public class VendedorListController implements Initializable, DadoAlteradoListen
 		List<Vendedor> result = getService().pesquisarTodos();
 
 		if (result == null || result.size() <= 0) {
-			Alerts.showAlert("Error ", null, "Erro ao carregar os departamentos",
-					AlertType.ERROR);
+			Alerts.showAlert("Error ", null, "Erro ao carregar os departamentos", AlertType.ERROR);
 			throw new IllegalStateException("Erro ao carregar os departamentos");
 		}
 
 		obsListDpt = FXCollections.observableArrayList(result);
 		tableViewVendedor.setItems(obsListDpt);
-		iniciarBotaoEditar(tableColumnEdit,Color.YELLOWGREEN,"yellowgreen","white");
+		iniciarBotaoEditar(tableColumnEdit, Color.YELLOWGREEN, "yellowgreen", "white");
 		iniciarBotaoRemover(tableColumnRemove, Color.RED, "red", "white");
 	}
 
 	/**
 	 * Metodo para criar um botao de edicao para cada linha da minha tabela
-	 * @param tableColumn 
-	 * @param backgroundColor 
-	 * @param borderColor 
-	 * @param textFilColor 
+	 * 
+	 * @param tableColumn
+	 * @param backgroundColor
+	 * @param borderColor
+	 * @param textFilColor
 	 */
-	public void iniciarBotaoEditar(TableColumn<Vendedor, Vendedor> tableColumn, Color textFilColor, String borderColor, String backgroundColor) {
+	public void iniciarBotaoEditar(TableColumn<Vendedor, Vendedor> tableColumn, Color textFilColor, String borderColor,
+			String backgroundColor) {
 		tableColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
 		tableColumn.setCellFactory(param -> new TableCell<Vendedor, Vendedor>() {
 			private final Button button = new Button("Editar");
@@ -165,31 +183,35 @@ public class VendedorListController implements Initializable, DadoAlteradoListen
 					setGraphic(null);
 					return;
 				}
-				button.setStyle("-fx-background-color: "+ backgroundColor+";-fx-border-color: "+borderColor+"; -fx-border-radius: 5px;");
+				button.setStyle("-fx-background-color: " + backgroundColor + ";-fx-border-color: " + borderColor
+						+ "; -fx-border-radius: 5px;");
 				button.setTextFill(textFilColor);
 				button.setCursor(Cursor.HAND);
 				button.setEffect(new Reflection());
 				setGraphic(button);
-				button.setOnAction(event -> helper.criarDialogForm(WorkUtils.palcoAtual(event),
-						"/gui/", "Atualizar dados", (DepartamentFormController controller) -> {
+				button.setOnAction(event -> helper.criarDialogForm(WorkUtils.palcoAtual(event), "/gui/",
+						"Atualizar dados", (DepartamentFormController controller) -> {
 							controller.atualizarDadosForm();
 							controller.selecionarNome();
-					
+
 						})
 
 				);
-				
+
 			}
 		});
 	}
+
 	/**
 	 * Metodo para criar um botao de remocao para cada linha da minha tabela
-	 * @param tableColumn 
-	 * @param backgroundColor 
-	 * @param borderColor 
-	 * @param textFilColor 
+	 * 
+	 * @param tableColumn
+	 * @param backgroundColor
+	 * @param borderColor
+	 * @param textFilColor
 	 */
-	public void iniciarBotaoRemover(TableColumn<Vendedor, Vendedor> tableColumn, Color textFilColor, String borderColor, String backgroundColor) {
+	public void iniciarBotaoRemover(TableColumn<Vendedor, Vendedor> tableColumn, Color textFilColor, String borderColor,
+			String backgroundColor) {
 		tableColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
 		tableColumn.setCellFactory(param -> new TableCell<Vendedor, Vendedor>() {
 			private final Button button = new Button("Remover");
@@ -200,25 +222,25 @@ public class VendedorListController implements Initializable, DadoAlteradoListen
 					setGraphic(null);
 					return;
 				}
-				button.setStyle("-fx-background-color: "+ backgroundColor+";-fx-border-color: "+borderColor+"; -fx-border-radius: 5px;");
+				button.setStyle("-fx-background-color: " + backgroundColor + ";-fx-border-color: " + borderColor
+						+ "; -fx-border-radius: 5px;");
 				button.setTextFill(textFilColor);
 				button.setCursor(Cursor.HAND);
 				button.setEffect(new Reflection());
 				setGraphic(button);
 				button.setOnAction(event -> removerVendedor(obj));
-					
+
 			}
 		});
 	}
-	
+
 	private void removerVendedor(Vendedor dpt) {
-		
-		
-		Optional<ButtonType>result = Alerts.mostrarConfirmacao("Confirmação", "Desaeja excluir esse departamento?");
-		if(result.get() == ButtonType.OK) {
-			if(service == null)
+
+		Optional<ButtonType> result = Alerts.mostrarConfirmacao("Confirmação", "Desaeja excluir esse departamento?");
+		if (result.get() == ButtonType.OK) {
+			if (service == null)
 				throw new IllegalStateException("O service esta nulo");
-			
+
 			try {
 				service.remover(dpt);
 				atualizarTableView();
@@ -226,9 +248,7 @@ public class VendedorListController implements Initializable, DadoAlteradoListen
 				Alerts.showAlert("Erro ao remover objeto", null, e.getMessage(), AlertType.ERROR);
 			}
 		}
-			
-				
-		
+
 	}
 
 	@Override
@@ -239,7 +259,8 @@ public class VendedorListController implements Initializable, DadoAlteradoListen
 
 	/**
 	 * Metodo usado para injetar minha dependecia (this) para o subject
-	 * @param controller subject 
+	 * 
+	 * @param controller subject
 	 */
 	public void inscreverMeuObjeto(DepartamentFormController controller) {
 		controller.inscreverDadoAlteradoListener(this);
