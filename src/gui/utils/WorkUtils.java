@@ -1,15 +1,19 @@
 package gui.utils;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
-import java.text.SimpleDateFormat;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 public class WorkUtils {
 
@@ -92,5 +96,36 @@ public class WorkUtils {
 			return cell;
 		});
 		
+	}
+	/**
+	 * Metodo para formatar o datePicker, para que a data possa aparecer dentro dele no formato que quiser
+	 * @param datePicker
+	 * @param formato
+	 */
+	public static void formatarDatePicker(DatePicker datePicker, String formato) {
+		datePicker.setConverter(new StringConverter<LocalDate>() {
+			DateTimeFormatter dateFormatter  = DateTimeFormatter.ofPattern(formato);
+					
+			{
+				datePicker.setPromptText(formato.toLowerCase());
+			}
+			
+			@Override
+			public String toString(LocalDate date) {
+				if(date != null) 
+					return dateFormatter.format(date);
+				
+					return null;
+				
+			}
+			
+			@Override
+			public LocalDate fromString(String string) {
+				if(string != null && !string.isEmpty())
+					return LocalDate.parse(string, dateFormatter);
+					
+				return null;
+			}
+		});
 	}
 }

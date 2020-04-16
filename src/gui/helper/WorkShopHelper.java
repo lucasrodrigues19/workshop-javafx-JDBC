@@ -176,6 +176,8 @@ public class WorkShopHelper {
 
 		} catch (Exception e) {
 			Alerts.showAlert("Error", "Erro ao abrir a view", e.getMessage(), AlertType.ERROR);
+			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 	 

@@ -88,9 +88,7 @@ public class VendedorListController implements Initializable, DadoAlteradoListen
 		helper.criarDialogForm(stage, "/gui/VendedorForm.fxml", "Entre com os dados do vendedor",
 				(VendedorFormController controller) -> {
 					controller.setService(getService());
-					controller.setVen(new Vendedor());
 					inscreverMeuObjeto(controller);// inscrevendo meu objeto(this) para esperar uma notificacao do subject(controller)																// notificação do subject(controller)
-					controller.atualizarDadosForm();
 
 				});
 	}

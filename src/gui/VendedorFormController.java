@@ -1,8 +1,11 @@
 package gui;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -19,6 +22,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -40,9 +44,29 @@ public class VendedorFormController implements Initializable {
 
 	@FXML
 	private TextField txtID;
+	
+	@FXML
+	private TextField txtEmail;
+	
+	@FXML
+	private DatePicker dpDataNasc;
+	
+	@FXML
+	private TextField txtSalario;
 
 	@FXML
 	private Label lblErroNome;
+	
+	@FXML
+	private Label lblErroEmail;
+
+	
+	@FXML
+	private Label lblErroDataNasc;
+
+	@FXML
+	private Label lblErroSalario;
+
 
 	@FXML
 	private Button btSalvar;
@@ -121,7 +145,20 @@ public class VendedorFormController implements Initializable {
 			exception.addErros("nome", "O campo não pode ser vazio");
 		}
 		ven.setNome(txtNome.getText());
-
+		
+		
+		if("".equals(txtEmail.getText().trim())) {
+			exception.addErros("email", "O campo não pode ser vazio");
+		}
+		ven.setEmail(txtEmail.getText());
+		
+		
+		if("".equals(txtSalario.getText().trim())) {
+			exception.addErros("salario", "O campo não pode ser vazio");
+		}
+		ven.setBaseSalario(Double.parseDouble(txtSalario.getText()));
+		
+		
 		if (exception.getErros().size() > 0) {
 			throw exception;
 		}
@@ -137,7 +174,10 @@ public class VendedorFormController implements Initializable {
 
 	private void inicializarNodes() {
 		Constraints.setTextFieldInteger(txtID);
-		Constraints.setTextFielMaxLength(txtNome, 30);
+		Constraints.setTextFielMaxLength(txtNome, 70);
+		Constraints.setTextFieldDouble(txtSalario);
+		Constraints.setTextFielMaxLength(txtEmail, 65);
+		WorkUtils.formatarDatePicker(dpDataNasc, "dd/MM/yyyy");
 
 	}
 
@@ -150,6 +190,13 @@ public class VendedorFormController implements Initializable {
 
 		txtID.setText(String.valueOf(ven.getId()));
 		txtNome.setText(ven.getNome());
+		txtEmail.setText(ven.getEmail());
+		
+		if(dpDataNasc !=null)
+			dpDataNasc.setValue(LocalDate.ofInstant(ven.getDataNasc().toInstant(), ZoneId.systemDefault())); //ZoneId.sistemDefault = pega o fuso horario da maquina
+		
+		Locale.setDefault(Locale.US);
+		txtSalario.setText(String.format("%.2f",ven.getBaseSalario()));
 	}
 
 	@Override
