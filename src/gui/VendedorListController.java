@@ -85,10 +85,12 @@ public class VendedorListController implements Initializable, DadoAlteradoListen
 	public void onBtNewAction(ActionEvent event) {
 		Stage stage = WorkUtils.palcoAtual(event);
 		System.out.println("Botao neew...");
-		helper.criarDialogForm(stage, "/gui/", "Entre com os dados do departamento",
-				(DepartamentFormController controller) -> {
-
-					inscreverMeuObjeto(controller);// me escrevendo(this)para receber o evento
+		helper.criarDialogForm(stage, "/gui/VendedorForm.fxml", "Entre com os dados do vendedor",
+				(VendedorFormController controller) -> {
+					controller.setService(getService());
+					controller.setVen(new Vendedor());
+					inscreverMeuObjeto(controller);// inscrevendo meu objeto(this) para esperar uma notificacao do subject(controller)																// notificação do subject(controller)
+					controller.atualizarDadosForm();
 
 				});
 	}
@@ -98,16 +100,13 @@ public class VendedorListController implements Initializable, DadoAlteradoListen
 		tableViewVendedor.setOnMouseClicked((MouseEvent event) -> {
 			if (event.getButton().equals(MouseButton.PRIMARY)) {
 				if (event.getClickCount() == 2) {
-					String nome = tableViewVendedor.getSelectionModel().getSelectedItem().getNome();
-					int id = tableViewVendedor.getSelectionModel().getSelectedItem().getId();
 					Stage stage = WorkUtils.palcoAtual(event);
-					helper.criarDialogForm(stage, "/gui/", "Atualizar dados",
-							(DepartamentFormController controller) -> {
-
+					helper.criarDialogForm(stage, "/gui/VendedorForm.fxml", "Atualizar dados",
+							(VendedorFormController controller) -> {
+								controller.setService(getService());
+								controller.setVen(getVendedorTable());
+								inscreverMeuObjeto(controller);// inscrevendo meu objeto(this) para esperar uma notificacao do subject(controller)																// notificação do subject(controller)
 								controller.atualizarDadosForm();
-								controller.selecionarNome();
-								inscreverMeuObjeto(controller);// me escrevendo(this)para receber o
-																// evento(onDadosAlterados)
 							});
 
 				}
@@ -189,10 +188,12 @@ public class VendedorListController implements Initializable, DadoAlteradoListen
 				button.setCursor(Cursor.HAND);
 				button.setEffect(new Reflection());
 				setGraphic(button);
-				button.setOnAction(event -> helper.criarDialogForm(WorkUtils.palcoAtual(event), "/gui/",
-						"Atualizar dados", (DepartamentFormController controller) -> {
+				button.setOnAction(event -> helper.criarDialogForm(WorkUtils.palcoAtual(event), "/gui/VendedorForm.fxml",
+						"Atualizar dados", (VendedorFormController controller) -> {
+							controller.setService(getService());
+							controller.setVen(obj);
+							inscreverMeuObjeto(controller);// inscrevendo meu objeto(this) para esperar uma notificação
 							controller.atualizarDadosForm();
-							controller.selecionarNome();
 
 						})
 
@@ -236,7 +237,7 @@ public class VendedorListController implements Initializable, DadoAlteradoListen
 
 	private void removerVendedor(Vendedor dpt) {
 
-		Optional<ButtonType> result = Alerts.mostrarConfirmacao("Confirmação", "Desaeja excluir esse departamento?");
+		Optional<ButtonType> result = Alerts.mostrarConfirmacao("Confirmação", "Deseja excluir esse vendedor?");
 		if (result.get() == ButtonType.OK) {
 			if (service == null)
 				throw new IllegalStateException("O service esta nulo");
@@ -262,8 +263,24 @@ public class VendedorListController implements Initializable, DadoAlteradoListen
 	 * 
 	 * @param controller subject
 	 */
-	public void inscreverMeuObjeto(DepartamentFormController controller) {
+	public void inscreverMeuObjeto(VendedorFormController controller) {
 		controller.inscreverDadoAlteradoListener(this);
+	}
+
+	/**
+	 * Pega os dados do vendedor de acordo com item selecionado
+	 * @return
+	 */
+	public Vendedor getVendedorTable() {
+
+		int id = tableViewVendedor.getSelectionModel().getSelectedItem().getId();
+		String nome = tableViewVendedor.getSelectionModel().getSelectedItem().getNome();
+		String email = tableViewVendedor.getSelectionModel().getSelectedItem().getEmail();
+		Date dataNasc = tableViewVendedor.getSelectionModel().getSelectedItem().getDataNasc();
+		Double baseSalario = tableViewVendedor.getSelectionModel().getSelectedItem().getBaseSalario();
+
+		return new Vendedor(id, nome, email, dataNasc, baseSalario, null);
+
 	}
 
 }

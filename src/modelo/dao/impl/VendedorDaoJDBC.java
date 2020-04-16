@@ -80,7 +80,6 @@ public class VendedorDaoJDBC implements VendedorDAO {
 
 		sql = "update vendedor set nome = ?,email = ?,dataNasc = ?,salarioBase = ?,dptId = ? where id = ?";
 		PreparedStatement st = null;
-		ResultSet rs = null;
 		try {
 			conn.setAutoCommit(false);
 			st = (PreparedStatement) conn.prepareStatement(sql);
@@ -105,7 +104,6 @@ public class VendedorDaoJDBC implements VendedorDAO {
 			}
 		} finally {
 			DB.fecharStatement(st);
-			DB.fecharResultSet(rs);
 		}
 
 	}
