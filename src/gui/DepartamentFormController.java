@@ -140,7 +140,7 @@ public class DepartamentFormController implements Initializable {
 	}
 
 	/**
-	 * Metodo responsavel por preencher as caixinhas de texto com os dados do objeto
+	 * Metodo responsavel por preencher os textField com os dados do objeto
 	 */
 	public void atualizarDadosForm() {
 		if (dpt == null)
@@ -153,6 +153,7 @@ public class DepartamentFormController implements Initializable {
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		inicializarNodes();
+		
 
 	}
 
@@ -162,5 +163,8 @@ public class DepartamentFormController implements Initializable {
 		if (filhos.contains("nome")) {
 			lblErroNome.setText(erros.get("nome"));
 		}
+	}
+	public void selecionarNome() {
+		txtNome.setFocusTraversable(true);
 	}
 }

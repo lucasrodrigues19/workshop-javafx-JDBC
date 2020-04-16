@@ -33,41 +33,41 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import modelo.entites.Departamento;
-import modelo.service.DepartamentoService;
+import modelo.entites.Vendedor;
+import modelo.service.VendedorService;
 
-public class DepartamentListController implements Initializable, DadoAlteradoListener {
+public class VendedorListController implements Initializable, DadoAlteradoListener {
 
 	private WorkShopHelper helper = new WorkShopHelper();
 
-	private DepartamentoService service;
+	private VendedorService service;
 
 	@FXML
-	private TableView<Departamento> tableViewDepartamento;
+	private TableView<Vendedor> tableViewVendedor;
 
 	@FXML
-	private TableColumn<Departamento, Integer> tableColumnId; // 1 - tipo da entidade, 2 - tipo da coluna
+	private TableColumn<Vendedor, Integer> tableColumnId; // 1 - tipo da entidade, 2 - tipo da coluna
 
 	@FXML
-	private TableColumn<Departamento, String> tableColumnName;
+	private TableColumn<Vendedor, String> tableColumnName;
 
 	@FXML
-	private TableColumn<Departamento, Departamento> tableColumnEdit;
+	private TableColumn<Vendedor, Vendedor> tableColumnEdit;
 	
 	@FXML
-	private TableColumn<Departamento, Departamento> tableColumnRemove;
+	private TableColumn<Vendedor, Vendedor> tableColumnRemove;
 
 	@FXML
 	private Button btNew;
 
-	private ObservableList<Departamento> obsListDpt;
+	private ObservableList<Vendedor> obsListDpt;
 
 	// get and service
-	public DepartamentoService getService() {
+	public VendedorService getService() {
 		return service;
 	}
 
-	public void setService(DepartamentoService service) {
+	public void setService(VendedorService service) {
 		this.service = service;
 	}
 
@@ -75,10 +75,9 @@ public class DepartamentListController implements Initializable, DadoAlteradoLis
 	public void onBtNewAction(ActionEvent event) {
 		Stage stage = WorkUtils.palcoAtual(event);
 		System.out.println("Botao neew...");
-		helper.criarDialogForm(stage, "/gui/DepartamentForm.fxml", "Entre com os dados do departamento",
+		helper.criarDialogForm(stage, "/gui/", "Entre com os dados do departamento",
 				(DepartamentFormController controller) -> {
-					controller.setDpt(new Departamento());
-					controller.setService(getService());
+	
 					inscreverMeuObjeto(controller);// me escrevendo(this)para receber o evento
 
 				});
@@ -86,16 +85,15 @@ public class DepartamentListController implements Initializable, DadoAlteradoLis
 
 	@FXML
 	public void onTableDuploClick() {
-		tableViewDepartamento.setOnMouseClicked((MouseEvent event) -> {
+		tableViewVendedor.setOnMouseClicked((MouseEvent event) -> {
 			if (event.getButton().equals(MouseButton.PRIMARY)) {
 				if (event.getClickCount() == 2) {
-					String nome = tableViewDepartamento.getSelectionModel().getSelectedItem().getNome();
-					int id = tableViewDepartamento.getSelectionModel().getSelectedItem().getId();
+					String nome = tableViewVendedor.getSelectionModel().getSelectedItem().getNome();
+					int id = tableViewVendedor.getSelectionModel().getSelectedItem().getId();
 					Stage stage = WorkUtils.palcoAtual(event);
-					helper.criarDialogForm(stage, "/gui/DepartamentForm.fxml", "Atualizar dados",
+					helper.criarDialogForm(stage, "/gui/", "Atualizar dados",
 							(DepartamentFormController controller) -> {
-								controller.setDpt(new Departamento(id, nome));
-								controller.setService(getService());
+								
 								controller.atualizarDadosForm();
 								controller.selecionarNome();
 								inscreverMeuObjeto(controller);// me escrevendo(this)para receber o
@@ -123,7 +121,7 @@ public class DepartamentListController implements Initializable, DadoAlteradoLis
 
 		// table view acompanha a altura e largura da janelaMain
 		Stage stage = (Stage) Main.getMainScene().getWindow(); // referencia para a janela
-		tableViewDepartamento.prefHeightProperty().bind(stage.heightProperty());
+		tableViewVendedor.prefHeightProperty().bind(stage.heightProperty());
 	}
 
 	/**
@@ -135,7 +133,7 @@ public class DepartamentListController implements Initializable, DadoAlteradoLis
 			Alerts.showAlert("Error ", null, "O service esta nulo", AlertType.ERROR);
 			throw new IllegalStateException("O service esta nulo");
 		}
-		List<Departamento> result = getService().pesquisarTodos();
+		List<Vendedor> result = getService().pesquisarTodos();
 
 		if (result == null || result.size() <= 0) {
 			Alerts.showAlert("Error ", null, "Erro ao carregar os departamentos",
@@ -144,7 +142,7 @@ public class DepartamentListController implements Initializable, DadoAlteradoLis
 		}
 
 		obsListDpt = FXCollections.observableArrayList(result);
-		tableViewDepartamento.setItems(obsListDpt);
+		tableViewVendedor.setItems(obsListDpt);
 		iniciarBotaoEditar(tableColumnEdit,Color.YELLOWGREEN,"yellowgreen","white");
 		iniciarBotaoRemover(tableColumnRemove, Color.RED, "red", "white");
 	}
@@ -156,13 +154,13 @@ public class DepartamentListController implements Initializable, DadoAlteradoLis
 	 * @param borderColor 
 	 * @param textFilColor 
 	 */
-	public void iniciarBotaoEditar(TableColumn<Departamento, Departamento> tableColumn, Color textFilColor, String borderColor, String backgroundColor) {
+	public void iniciarBotaoEditar(TableColumn<Vendedor, Vendedor> tableColumn, Color textFilColor, String borderColor, String backgroundColor) {
 		tableColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-		tableColumn.setCellFactory(param -> new TableCell<Departamento, Departamento>() {
+		tableColumn.setCellFactory(param -> new TableCell<Vendedor, Vendedor>() {
 			private final Button button = new Button("Editar");
 
 			@Override
-			protected void updateItem(Departamento obj, boolean empty) {
+			protected void updateItem(Vendedor obj, boolean empty) {
 				if (obj == null) {
 					setGraphic(null);
 					return;
@@ -173,10 +171,7 @@ public class DepartamentListController implements Initializable, DadoAlteradoLis
 				button.setEffect(new Reflection());
 				setGraphic(button);
 				button.setOnAction(event -> helper.criarDialogForm(WorkUtils.palcoAtual(event),
-						"/gui/DepartamentForm.fxml", "Atualizar dados", (DepartamentFormController controller) -> {
-							controller.setDpt(obj);
-							inscreverMeuObjeto(controller);
-							controller.setService(getService());
+						"/gui/", "Atualizar dados", (DepartamentFormController controller) -> {
 							controller.atualizarDadosForm();
 							controller.selecionarNome();
 					
@@ -194,13 +189,13 @@ public class DepartamentListController implements Initializable, DadoAlteradoLis
 	 * @param borderColor 
 	 * @param textFilColor 
 	 */
-	public void iniciarBotaoRemover(TableColumn<Departamento, Departamento> tableColumn, Color textFilColor, String borderColor, String backgroundColor) {
+	public void iniciarBotaoRemover(TableColumn<Vendedor, Vendedor> tableColumn, Color textFilColor, String borderColor, String backgroundColor) {
 		tableColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-		tableColumn.setCellFactory(param -> new TableCell<Departamento, Departamento>() {
+		tableColumn.setCellFactory(param -> new TableCell<Vendedor, Vendedor>() {
 			private final Button button = new Button("Remover");
 
 			@Override
-			protected void updateItem(Departamento obj, boolean empty) {
+			protected void updateItem(Vendedor obj, boolean empty) {
 				if (obj == null) {
 					setGraphic(null);
 					return;
@@ -210,13 +205,13 @@ public class DepartamentListController implements Initializable, DadoAlteradoLis
 				button.setCursor(Cursor.HAND);
 				button.setEffect(new Reflection());
 				setGraphic(button);
-				button.setOnAction(event -> removerDepartamento(obj));
+				button.setOnAction(event -> removerVendedor(obj));
 					
 			}
 		});
 	}
 	
-	private void removerDepartamento(Departamento dpt) {
+	private void removerVendedor(Vendedor dpt) {
 		
 		
 		Optional<ButtonType>result = Alerts.mostrarConfirmacao("Confirmação", "Desaeja excluir esse departamento?");
@@ -242,6 +237,10 @@ public class DepartamentListController implements Initializable, DadoAlteradoLis
 
 	}
 
+	/**
+	 * Metodo usado para injetar minha dependecia (this) para o subject
+	 * @param controller subject 
+	 */
 	public void inscreverMeuObjeto(DepartamentFormController controller) {
 		controller.inscreverDadoAlteradoListener(this);
 	}

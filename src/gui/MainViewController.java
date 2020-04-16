@@ -14,6 +14,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.MenuItem;
 import modelo.dao.DaoFactory;
 import modelo.service.DepartamentoService;
+import modelo.service.VendedorService;
 
 /**
  * Classe usada para da suporte aos eventos e modificações na GUI gerada a
@@ -38,7 +39,16 @@ public class MainViewController implements Initializable {
 	@FXML
 	public void onMenuItemVendedorAction() {
 		System.out.println(menuItemVendedor.getText());
-
+		try {
+			helper.loadView("/gui/VendedorList.fxml",Main.getMainScene(), (VendedorListController controller) -> {
+				controller.setService(new VendedorService(DaoFactory.getVendedorDAO(DB.getConexao("db.properties"))));
+				controller.atualizarTableView();
+			});
+		} catch (MyException e) {
+			e.printStackTrace();
+			Alerts.showAlert("Error", "Erro ao listar dados da tabela", e.getMessage(), AlertType.ERROR);
+			System.out.println(e.getMessage());
+		}
 	}
 
 	@FXML
