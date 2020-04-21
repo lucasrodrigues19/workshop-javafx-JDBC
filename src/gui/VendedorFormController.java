@@ -43,10 +43,9 @@ public class VendedorFormController implements Initializable {
 	private WorkShopHelper helper = new WorkShopHelper();
 
 	private VendedorService service;
-	
+
 	private DepartamentoService dptService;
 
-	
 	private List<DadoAlteradoListener> dadosAlteradosListeners = new ArrayList<DadoAlteradoListener>();
 
 	@FXML
@@ -54,23 +53,22 @@ public class VendedorFormController implements Initializable {
 
 	@FXML
 	private TextField txtID;
-	
+
 	@FXML
 	private TextField txtEmail;
-	
+
 	@FXML
 	private DatePicker dpDataNasc;
-	
+
 	@FXML
 	private TextField txtSalario;
 
 	@FXML
 	private Label lblErroNome;
-	
+
 	@FXML
 	private Label lblErroEmail;
 
-	
 	@FXML
 	private Label lblErroDataNasc;
 
@@ -80,8 +78,8 @@ public class VendedorFormController implements Initializable {
 	private Label lblErroDpt;
 
 	@FXML
-	private ComboBox<GenericaCombo>cmbDpt;
-	
+	private ComboBox<GenericaCombo> cmbDpt;
+
 	@FXML
 	private ObservableList<GenericaCombo> obsDpt;
 
@@ -95,13 +93,11 @@ public class VendedorFormController implements Initializable {
 		this.ven = ven;
 	}
 
-	
-	public void setServices(VendedorService service,DepartamentoService dptService) {
+	public void setServices(VendedorService service, DepartamentoService dptService) {
 		this.service = service;
 		this.dptService = dptService;
 	}
 
-	
 	/**
 	 * Adiciona um listener(Esperando um sinal) para receber o evento de minha
 	 * classe
@@ -114,12 +110,12 @@ public class VendedorFormController implements Initializable {
 
 	@FXML
 	public void onBtSalvarAction(ActionEvent event) {
-		
+
 		if (service == null)
 			throw new IllegalArgumentException("O service está null");
 		if (ven == null)
 			throw new IllegalArgumentException("O departamento está null");
-		
+
 		try {
 
 			ven = getDadosForm();
@@ -157,34 +153,31 @@ public class VendedorFormController implements Initializable {
 
 		ven.setId(WorkUtils.tryParseToInt(txtID.getText()));
 
-		if ( txtNome.getText() == null || "".equals(txtNome.getText().trim())) {
+		if (txtNome.getText() == null || "".equals(txtNome.getText().trim())) {
 			exception.addErros("nome", "O campo não pode ser vazio");
 		}
-		
-		
-		
-		if(txtEmail.getText() == null  ||"".equals(txtEmail.getText().trim())) {
+
+		if (txtEmail.getText() == null || "".equals(txtEmail.getText().trim())) {
 			exception.addErros("email", "O campo não pode ser vazio");
 		}
-		
-		if(dpDataNasc.getValue() == null) {
+
+		if (dpDataNasc.getValue() == null) {
 			exception.addErros("dataNasc", "O campo não pode ser vazio");
 		}
-		
-		if(txtSalario.getText() == null || "".equals(txtSalario.getText().trim())) {
+
+		if (txtSalario.getText() == null || "".equals(txtSalario.getText().trim())) {
 			exception.addErros("salario", "O campo não pode ser vazio");
 		}
-		
-		
+
 		if (exception.getErros().size() > 0) {
 			throw exception;
 		}
 		ven.setNome(txtNome.getText());
 		ven.setEmail(txtEmail.getText());
-		ven.setBaseSalario(Double.parseDouble(txtSalario.getText()));
+		ven.setBaseSalario(WorkUtils.tryParseToDouble(txtSalario.getText()));
 		Instant instant = Instant.from(dpDataNasc.getValue().atStartOfDay(ZoneId.systemDefault()));
 		ven.setDataNasc(java.util.Date.from((instant)));
-		ven.setDepartamento((Departamento)cmbDpt.getSelectionModel().getSelectedItem());
+		ven.setDepartamento((Departamento) cmbDpt.getSelectionModel().getSelectedItem());
 		return ven;
 	}
 
@@ -201,7 +194,6 @@ public class VendedorFormController implements Initializable {
 		Constraints.setTextFieldDouble(txtSalario);
 		Constraints.setTextFielMaxLength(txtEmail, 65);
 		WorkUtils.formatarDatePicker(dpDataNasc, "dd/MM/yyyy");
-		
 
 	}
 
@@ -215,14 +207,21 @@ public class VendedorFormController implements Initializable {
 		txtID.setText(String.valueOf(ven.getId()));
 		txtNome.setText(ven.getNome());
 		txtEmail.setText(ven.getEmail());
-		
-		if(ven.getDataNasc() != null)
-			dpDataNasc.setValue(LocalDate.ofInstant(ven.getDataNasc().toInstant(), ZoneId.systemDefault())); //ZoneId.sistemDefault = pega o fuso horario da maquina
-		
+
+		if (ven.getDataNasc() != null)
+			dpDataNasc.setValue(LocalDate.ofInstant(ven.getDataNasc().toInstant(), ZoneId.systemDefault())); // ZoneId.sistemDefault
+																												// =
+																												// pega
+																												// o
+																												// fuso
+																												// horario
+																												// da
+																												// maquina
+
 		Locale.setDefault(Locale.US);
-		txtSalario.setText(String.format("%.2f",ven.getBaseSalario()));
-		
-		if(ven.getDepartamento() == null)
+		txtSalario.setText(String.format("%.2f", ven.getBaseSalario()));
+
+		if (ven.getDepartamento() == null)
 			cmbDpt.getSelectionModel().selectFirst();
 		else
 			cmbDpt.setValue(ven.getDepartamento());
@@ -236,34 +235,23 @@ public class VendedorFormController implements Initializable {
 
 	private void setMsgErros(Map<String, String> erros) {
 		Set<String> filhos = erros.keySet();
-
-		if (filhos.contains("nome")) {
-			lblErroNome.setText(erros.get("nome"));
-		}
-//		if (filhos.contains("departamento")) {
-//			lblErroDpt.setText(erros.get("departamento"));
-//		}
-		if (filhos.contains("salario")) {
-			lblErroSalario.setText(erros.get("salario"));
-		}
-		if (filhos.contains("email")) {
-			lblErroEmail.setText(erros.get("email"));
-		}
-		if (filhos.contains("dataNasc")) {
-			lblErroDataNasc.setText(erros.get("dataNasc"));
-		}
-		
+		lblErroNome.setText(filhos.contains("nome") ? erros.get("nome") : "");
+		lblErroSalario.setText(filhos.contains("salario") ? erros.get("salario") : "");
+		lblErroEmail.setText(filhos.contains("email") ? erros.get("email") : "");
+		lblErroDataNasc.setText(filhos.contains("dataNasc") ? erros.get("dataNasc") : "");
 	}
+
 	public void selecionarNome() {
 		txtNome.setFocusTraversable(true);
 	}
+
 	public void inicalizarComboBox() throws MyException {
-		if(dptService == null)
+		if (dptService == null)
 			throw new IllegalStateException("Departamento service sesta nulo");
-		
-		List<GenericaCombo>list = new ArrayList<GenericaCombo>();
+
+		List<GenericaCombo> list = new ArrayList<GenericaCombo>();
 		list.addAll(dptService.pesquisarTodos());
-		helper.addItemsComboBox(cmbDpt, obsDpt,list);
+		helper.addItemsComboBox(cmbDpt, obsDpt, list);
 		helper.setExibirComboBox(cmbDpt);
 	}
 }

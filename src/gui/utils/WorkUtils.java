@@ -48,6 +48,13 @@ public class WorkUtils {
 			return null;
 		}
 	}
+	public static Double tryParseToDouble(String str) {
+		try {
+			return Double.parseDouble(str);
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
 	/**
 	 * Metodo usado para formatar a data de uma tabela
 	 * @param <T>
