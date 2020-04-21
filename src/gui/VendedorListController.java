@@ -7,7 +7,9 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import application.Main;
+import db.DB;
 import db.ex.DBException;
+import ex.MyException;
 import gui.helper.WorkShopHelper;
 import gui.listeners.DadoAlteradoListener;
 import gui.utils.Alerts;
@@ -31,7 +33,11 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import modelo.dao.DaoFactory;
+import modelo.dao.DepartamentoDAO;
+import modelo.entites.Departamento;
 import modelo.entites.Vendedor;
+import modelo.service.DepartamentoService;
 import modelo.service.VendedorService;
 
 public class VendedorListController implements Initializable, DadoAlteradoListener {
@@ -39,6 +45,8 @@ public class VendedorListController implements Initializable, DadoAlteradoListen
 	private WorkShopHelper helper = new WorkShopHelper();
 
 	private VendedorService service;
+	
+	private DepartamentoService dptService = new DepartamentoService(DaoFactory.getDepartamentoDAO(DB.getConexao("db.properties")));
 
 	@FXML
 	private TableView<Vendedor> tableViewVendedor;
@@ -87,8 +95,19 @@ public class VendedorListController implements Initializable, DadoAlteradoListen
 		System.out.println("Botao neew...");
 		helper.criarDialogForm(stage, "/gui/VendedorForm.fxml", "Entre com os dados do vendedor",
 				(VendedorFormController controller) -> {
-					controller.setService(getService());
-					inscreverMeuObjeto(controller);// inscrevendo meu objeto(this) para esperar uma notificacao do subject(controller)																// notificação do subject(controller)
+					
+					try {
+						controller.setServices(getService(),dptService);
+						controller.setVen(new Vendedor());
+						controller.inicalizarComboBox();
+						controller.atualizarDadosForm();
+						inscreverMeuObjeto(controller);// inscrevendo meu objeto(this) para esperar uma notificacao do subject(controller)	
+						
+					} catch (MyException e) {
+						e.printStackTrace();
+						Alerts.showAlert("Erro ao carregar a comboBox", null, e.getMessage(), AlertType.ERROR);
+					}
+																				// notificação do subject(controller)
 
 				});
 	}
@@ -101,10 +120,17 @@ public class VendedorListController implements Initializable, DadoAlteradoListen
 					Stage stage = WorkUtils.palcoAtual(event);
 					helper.criarDialogForm(stage, "/gui/VendedorForm.fxml", "Atualizar dados",
 							(VendedorFormController controller) -> {
-								controller.setService(getService());
-								controller.setVen(getVendedorTable());
-								inscreverMeuObjeto(controller);// inscrevendo meu objeto(this) para esperar uma notificacao do subject(controller)																// notificação do subject(controller)
-								controller.atualizarDadosForm();
+								controller.setServices(getService(),dptService);
+								try {
+									controller.inicalizarComboBox();
+									controller.setVen(getVendedorTable());
+									inscreverMeuObjeto(controller);// inscrevendo meu objeto(this) para esperar uma notificacao do subject(controller)																// notificação do subject(controller)
+									controller.atualizarDadosForm();
+								} catch (MyException e) {
+									e.printStackTrace();
+									Alerts.showAlert("Erro ao carregar a comboBox", null, e.getMessage(), AlertType.ERROR);
+								}
+								
 							});
 
 				}
@@ -188,10 +214,18 @@ public class VendedorListController implements Initializable, DadoAlteradoListen
 				setGraphic(button);
 				button.setOnAction(event -> helper.criarDialogForm(WorkUtils.palcoAtual(event), "/gui/VendedorForm.fxml",
 						"Atualizar dados", (VendedorFormController controller) -> {
-							controller.setService(getService());
-							controller.setVen(obj);
-							inscreverMeuObjeto(controller);// inscrevendo meu objeto(this) para esperar uma notificação
-							controller.atualizarDadosForm();
+							
+							try {
+								controller.setServices(getService(),dptService);
+								controller.inicalizarComboBox();
+								controller.setVen(obj);
+								inscreverMeuObjeto(controller);// inscrevendo meu objeto(this) para esperar uma notificação
+								controller.atualizarDadosForm();
+							} catch (MyException e) {
+								e.printStackTrace();
+								Alerts.showAlert("Erro ao carregar a comboBox", null, e.getMessage(), AlertType.ERROR);
+							}
+							
 
 						})
 
@@ -276,8 +310,8 @@ public class VendedorListController implements Initializable, DadoAlteradoListen
 		String email = tableViewVendedor.getSelectionModel().getSelectedItem().getEmail();
 		Date dataNasc = tableViewVendedor.getSelectionModel().getSelectedItem().getDataNasc();
 		Double baseSalario = tableViewVendedor.getSelectionModel().getSelectedItem().getBaseSalario();
-
-		return new Vendedor(id, nome, email, dataNasc, baseSalario, null);
+		Departamento dpt = tableViewVendedor.getSelectionModel().getSelectedItem().getDepartamento();
+		return new Vendedor(id, nome, email, dataNasc, baseSalario, dpt);
 
 	}
 

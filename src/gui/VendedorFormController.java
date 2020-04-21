@@ -11,22 +11,27 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import db.ex.DBException;
+import ex.MyException;
 import ex.MyValidationException;
 import gui.helper.WorkShopHelper;
 import gui.listeners.DadoAlteradoListener;
 import gui.utils.Alerts;
 import gui.utils.Constraints;
 import gui.utils.WorkUtils;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import modelo.entites.GenericaCombo;
 import modelo.entites.Vendedor;
+import modelo.service.DepartamentoService;
 import modelo.service.VendedorService;
 
 public class VendedorFormController implements Initializable {
@@ -36,7 +41,10 @@ public class VendedorFormController implements Initializable {
 	private WorkShopHelper helper = new WorkShopHelper();
 
 	private VendedorService service;
+	
+	private DepartamentoService dptService;
 
+	
 	private List<DadoAlteradoListener> dadosAlteradosListeners = new ArrayList<DadoAlteradoListener>();
 
 	@FXML
@@ -67,6 +75,11 @@ public class VendedorFormController implements Initializable {
 	@FXML
 	private Label lblErroSalario;
 
+	@FXML
+	private ComboBox<GenericaCombo>cmbDpt;
+	
+	@FXML
+	private ObservableList<GenericaCombo> obsDpt;
 
 	@FXML
 	private Button btSalvar;
@@ -78,14 +91,13 @@ public class VendedorFormController implements Initializable {
 		this.ven = ven;
 	}
 
-	public VendedorService getService() {
-		return service;
-	}
-
-	public void setService(VendedorService service) {
+	
+	public void setServices(VendedorService service,DepartamentoService dptService) {
 		this.service = service;
+		this.dptService = dptService;
 	}
 
+	
 	/**
 	 * Adiciona um listener(Esperando um sinal) para receber o evento de minha
 	 * classe
@@ -178,6 +190,7 @@ public class VendedorFormController implements Initializable {
 		Constraints.setTextFieldDouble(txtSalario);
 		Constraints.setTextFielMaxLength(txtEmail, 65);
 		WorkUtils.formatarDatePicker(dpDataNasc, "dd/MM/yyyy");
+		
 
 	}
 
@@ -192,17 +205,21 @@ public class VendedorFormController implements Initializable {
 		txtNome.setText(ven.getNome());
 		txtEmail.setText(ven.getEmail());
 		
-		if(dpDataNasc !=null)
+		if(ven.getDataNasc() != null)
 			dpDataNasc.setValue(LocalDate.ofInstant(ven.getDataNasc().toInstant(), ZoneId.systemDefault())); //ZoneId.sistemDefault = pega o fuso horario da maquina
 		
 		Locale.setDefault(Locale.US);
 		txtSalario.setText(String.format("%.2f",ven.getBaseSalario()));
+		
+		if(ven.getDepartamento() == null)
+			cmbDpt.getSelectionModel().selectFirst();
+		else
+			cmbDpt.setValue(ven.getDepartamento());
 	}
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		inicializarNodes();
-		
 
 	}
 
@@ -215,5 +232,14 @@ public class VendedorFormController implements Initializable {
 	}
 	public void selecionarNome() {
 		txtNome.setFocusTraversable(true);
+	}
+	public void inicalizarComboBox() throws MyException {
+		if(dptService == null)
+			throw new IllegalStateException("Departamento service sesta nulo");
+		
+		List<GenericaCombo>list = new ArrayList<GenericaCombo>();
+		list.addAll(dptService.pesquisarTodos());
+		helper.addItemsComboBox(cmbDpt, obsDpt,list);
+		helper.setExibirComboBox(cmbDpt);
 	}
 }

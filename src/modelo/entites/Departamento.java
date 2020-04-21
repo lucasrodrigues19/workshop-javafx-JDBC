@@ -2,7 +2,7 @@ package modelo.entites;
 
 import java.io.Serializable;
 
-public class Departamento implements Serializable{
+public class Departamento implements Serializable,GenericaCombo{
 	/**
 	 * 
 	 */
@@ -69,6 +69,11 @@ public class Departamento implements Serializable{
 	@Override
 	public String toString() {
 		return "Departamento [id=" + id + ", nome=" + nome + "]";
+	}
+
+	@Override
+	public String getDados() {
+		return this.getNome();
 	}
 
 }
