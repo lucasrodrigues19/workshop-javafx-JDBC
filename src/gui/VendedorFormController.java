@@ -1,6 +1,7 @@
 package gui;
 
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import modelo.entites.Departamento;
 import modelo.entites.GenericaCombo;
 import modelo.entites.Vendedor;
 import modelo.service.DepartamentoService;
@@ -74,6 +76,8 @@ public class VendedorFormController implements Initializable {
 
 	@FXML
 	private Label lblErroSalario;
+	@FXML
+	private Label lblErroDpt;
 
 	@FXML
 	private ComboBox<GenericaCombo>cmbDpt;
@@ -153,27 +157,34 @@ public class VendedorFormController implements Initializable {
 
 		ven.setId(WorkUtils.tryParseToInt(txtID.getText()));
 
-		if ("".equals(txtNome.getText().trim())) {
+		if ( txtNome.getText() == null || "".equals(txtNome.getText().trim())) {
 			exception.addErros("nome", "O campo não pode ser vazio");
 		}
-		ven.setNome(txtNome.getText());
 		
 		
-		if("".equals(txtEmail.getText().trim())) {
+		
+		if(txtEmail.getText() == null  ||"".equals(txtEmail.getText().trim())) {
 			exception.addErros("email", "O campo não pode ser vazio");
 		}
-		ven.setEmail(txtEmail.getText());
 		
+		if(dpDataNasc.getValue() == null) {
+			exception.addErros("dataNasc", "O campo não pode ser vazio");
+		}
 		
-		if("".equals(txtSalario.getText().trim())) {
+		if(txtSalario.getText() == null || "".equals(txtSalario.getText().trim())) {
 			exception.addErros("salario", "O campo não pode ser vazio");
 		}
-		ven.setBaseSalario(Double.parseDouble(txtSalario.getText()));
 		
 		
 		if (exception.getErros().size() > 0) {
 			throw exception;
 		}
+		ven.setNome(txtNome.getText());
+		ven.setEmail(txtEmail.getText());
+		ven.setBaseSalario(Double.parseDouble(txtSalario.getText()));
+		Instant instant = Instant.from(dpDataNasc.getValue().atStartOfDay(ZoneId.systemDefault()));
+		ven.setDataNasc(java.util.Date.from((instant)));
+		ven.setDepartamento((Departamento)cmbDpt.getSelectionModel().getSelectedItem());
 		return ven;
 	}
 
@@ -229,6 +240,19 @@ public class VendedorFormController implements Initializable {
 		if (filhos.contains("nome")) {
 			lblErroNome.setText(erros.get("nome"));
 		}
+//		if (filhos.contains("departamento")) {
+//			lblErroDpt.setText(erros.get("departamento"));
+//		}
+		if (filhos.contains("salario")) {
+			lblErroSalario.setText(erros.get("salario"));
+		}
+		if (filhos.contains("email")) {
+			lblErroEmail.setText(erros.get("email"));
+		}
+		if (filhos.contains("dataNasc")) {
+			lblErroDataNasc.setText(erros.get("dataNasc"));
+		}
+		
 	}
 	public void selecionarNome() {
 		txtNome.setFocusTraversable(true);

@@ -88,7 +88,9 @@
                </font>
             </Label>
             <ComboBox fx:id="cmbDpt" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <Label fx:id="lblErroDpt" prefHeight="16.0" prefWidth="191.0" textFill="#e11313" GridPane.columnIndex="2" GridPane.rowIndex="5" />
          </children>
       </GridPane>
+      <Label fx:id="lblErroEmail1" layoutX="10.0" layoutY="10.0" prefHeight="16.0" prefWidth="195.0" textFill="#e11313" />
    </children>
 </AnchorPane>
