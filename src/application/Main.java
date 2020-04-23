@@ -24,10 +24,10 @@ public class Main extends Application {
 
 			mainScene = new Scene(scrollPane);
 			primaryStage.setScene(mainScene);
-			primaryStage.setTitle("Controle de vendas");
+			primaryStage.setTitle("WorkAPP");
 			primaryStage.show();
 		} catch (Exception e) {
-			e.getStackTrace();
+			e.printStackTrace();
 			Alerts.showAlert("Error", "Erro ao carregar a MainView", e.getMessage(), AlertType.ERROR);
 		}
 	}

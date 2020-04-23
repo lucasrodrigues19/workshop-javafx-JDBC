@@ -1,30 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<ScrollPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainViewController">
+<ScrollPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="408.0" prefWidth="648.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainViewController">
    <content>
-      <VBox prefHeight="340.0" prefWidth="458.0">
+      <VBox prefHeight="404.0" prefWidth="645.0">
          <children>
-            <MenuBar>
+            <MenuBar style="-fx-background-color: #00BFFF;">
               <menus>
-                <Menu mnemonicParsing="false" text="Cadastro">
+                <Menu mnemonicParsing="false" style="-fx-background-color: #d1d1d1;" text="Cadastro">
                   <items>
                         <MenuItem fx:id="menuItemDepartamento" mnemonicParsing="false" onAction="#onMenuItemDepartamentoAction" text="Departamento" />
                     <MenuItem fx:id="menuItemVendedor" mnemonicParsing="false" onAction="#onMenuItemVendedorAction" text="Vendedor" />
                   </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Help">
+                <Menu mnemonicParsing="false" style="-fx-background-color: #d1d1d1;" text="Help">
                   <items>
                     <MenuItem fx:id="menuItemSobre" mnemonicParsing="false" onAction="#onMenuItemSobreAction" text="About" />
                   </items>
                 </Menu>
               </menus>
             </MenuBar>
+            <Pane prefHeight="297.0" prefWidth="645.0">
+               <children>
+                  <Label layoutX="103.0" layoutY="96.0" text="workAPP" textFill="#2db7cd">
+                     <font>
+                        <Font size="87.0" />
+                     </font>
+                  </Label>
+               </children>
+            </Pane>
          </children>
       </VBox>
    </content>
